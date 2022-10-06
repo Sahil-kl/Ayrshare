@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 const axios = require('axios')
+const qs = require('qs')
 
 @Injectable()
 export class AyrshareService {
@@ -9,20 +10,51 @@ export class AyrshareService {
         this.API_KEY = this.config.get('API_KEY')
     }
     async getPostById(id) {
-        // console.log(`${this.config.get('X_CLIENT_ID')}`,`${this.config.get('X_API_KEY')}`)
-        let post = await axios.request({
-          url: `https://app.ayrshare.com/api/post/${id}`,
+      try {
+        let config = {
           method: 'get',
-          headers: {
-            'Authorization': `Bearer ${this.API_KEY}`,
+          url: `https://app.ayrshare.com/api/post/${id}`,
+          headers: { 
+            'Authorization': `Bearer ${this.API_KEY}`, 
             'Content-Type': 'application/json'
-          },
-        }).catch(console.error)
+          }
+        };
+        let post = await axios(config)
 
         if (post) {
           return post.data;
         }
-        return post.error;
-    
+        return post;
+      }catch(err){
+        console.log('ERR=====>',err.response.data)
+        return err.response.data
       }
+  }
+    
+  async upload(file) {
+        try {
+          let config = {
+            method: 'post',
+            url: 'https://app.ayrshare.com/api/media/upload',
+            headers: { 
+              'Authorization': `Bearer ${this.API_KEY}`, 
+              'Content-Type': 'application/json'
+            },
+            data : {
+              'file': file.buffer,
+              'fileName': file.originalName
+            }
+          };
+          
+          let uploadFile = await axios(config)
+          console.log('uploadFile====>',uploadFile)
+          if (uploadFile) {
+            return uploadFile.data;
+          }
+          return false;
+      }catch(err){
+        console.log('ERR=====>',err.response)
+        return err.response.data
+      }
+    }
 }

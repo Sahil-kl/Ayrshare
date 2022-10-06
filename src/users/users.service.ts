@@ -28,6 +28,7 @@ export class UsersService {
       }
       return false;
     }catch(err){
+      
       return err.response.data
     }
   }
@@ -62,7 +63,7 @@ export class UsersService {
   }catch(err){
     return err.response.data
   }
-}
+  }
 
   async findAll() {
     try {
@@ -110,4 +111,54 @@ export class UsersService {
       return err.response.data
     }
   }
+
+  async postAnalytics(data) {
+    try {
+      console.log(JSON.stringify(data))
+      let config = {
+        method: 'post',
+        url: `https://app.ayrshare.com/api/analytics/post`,
+        headers: { 
+          'Authorization': `Bearer ${this.API_KEY}`, 
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(data)
+      };
+      let post = await axios(config)
+
+      if (post) {
+        return post.data;
+      }
+      return post;
+    }catch(err){
+      console.log('ERR=====>',err.response.data)
+      return err.response.data
+    }
+  }
+
+  async socialAnalytics(data, profileKey) {
+    try {
+      console.log(JSON.stringify(data))
+      let config = {
+        method: 'post',
+        url: `https://app.ayrshare.com/api/analytics/social?profileKey=${profileKey}`,
+        headers: { 
+          'Authorization': `Bearer ${this.API_KEY}`, 
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(data)
+      };
+      console.log(config)
+      let post = await axios(config)
+
+      if (post) {
+        return post.data;
+      }
+      return post;
+    }catch(err){
+      console.log('ERR=====>',err.response.data)
+      return err.response.data
+    }
+  }
+  
 }
